@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logic Quiz Pro</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #3498db);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background-color: rgba(0,0,0,0.75);
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 600px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.75rem;
+      background-color: #2980b9;
+      border: none;
+      border-radius: 0.5rem;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .options button:hover {
+      background-color: #1abc9c;
+    }
+    .status {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      text-align: center;
+      color: #ccc;
+    }
+    .weather {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      margin-right: 0.5rem;
+    }
+    button#getWeather {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: #1abc9c;
+      color: white;
+      cursor: pointer;
+    }
+    @media (max-width: 600px) {
+      .quiz-container {
+        padding: 1rem;
+      }
+      .question, .options button {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Logic Master Quiz</h1>
+    <div class="question" id="question">Loading question...</div>
+    <div class="options" id="options"></div>
+    <div class="status">
+      <p>Score: <span id="score">0</span></p>
+      <p>Questions Attempted: <span id="attempted">0</span></p>
+    </div>
+    <div class="weather">
+      <input type="text" id="cityInput" placeholder="Enter city">
+      <button id="getWeather">Get Weather</button>
+      <p id="weatherResult">Weather info will appear here.</p>
+    </div>
+    <div class="footer">
+      <p>Random joke: <span id="joke">Loading...</span></p>
+    </div>
+  </div>
+  <script>
+    const questions = [
+      {
+        q: "Which number logically replaces the question mark: 3, 9, 27, ?",
+        options: [54, 81, 72, 64],
+        answer: 81
+      },
+      {
+        q: "If TWO = 39, and FOUR = 60, then FIVE = ?",
+        options: [70, 65, 75, 80],
+        answer: 75
+      },
+      {
+        q: "Which letter comes next in this series: B, D, G, K, ?",
+        options: ['P', 'Q', 'O', 'N'],
+        answer: 'P'
+      },
+      {
+        q: "I am an odd number. Take away one letter and I become even. What am I?",
+        options: ['Seven', 'Nine', 'Eleven', 'Thirteen'],
+        answer: 'Seven'
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let attempted = 0;
+
+    function loadQuestion() {
+      if (currentIndex >= questions.length) {
+        document.getElementById('question').innerText = 'Quiz completed!';
+        document.getElementById('options').innerHTML = '';
+        return;
+      }
+      const current = questions[currentIndex];
+      document.getElementById('question').innerText = current.q;
+      const optionsContainer = document.getElementById('options');
+      optionsContainer.innerHTML = '';
+      current.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.onclick = () => {
+          attempted++;
+          if (opt === current.answer) {
+            score += 10;
+          }
+          document.getElementById('score').innerText = score;
+          document.getElementById('attempted').innerText = attempted;
+          currentIndex++;
+          loadQuestion();
+        };
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function loadJoke() {
+      fetch('https://v2.jokeapi.dev/joke/Programming?type=single')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('joke').innerText = data.joke;
+        })
+        .catch(() => {
+          document.getElementById('joke').innerText = 'Failed to load joke.';
+        });
+    }
+
+    document.getElementById('getWeather').addEventListener('click', () => {
+      const city = document.getElementById('cityInput').value;
+      const apiKey = prompt("Please enter your OpenWeatherMap API key:");
+      if (!city || !apiKey) return alert('Please enter both city and API key.');
+      fetch(https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric)
+        .'then(res => res.json())
+        .then(data => {
+          if (data.cod !== 200) throw new Error(data.message);
+          const { temp } = data.main;
+          const { description } = data.weather[0];
+          document.getElementById('weatherResult').innerText = ${city}: ${temp}°C, ${description};
+        })
+        .catch(err => {
+          document.getElementById('weatherResult').innerText = Error: ${err.message};
+        });
+    });
+
+    loadQuestion();
+    loadJoke();
+  </script>
+</body>
+</html>
